@@ -12,9 +12,11 @@ function getArticleText() {
 }
 
 // Listens for some commands from popup.js
-chrome.runtime.onMessage.addListener((req, _sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
   if ((req.type = "GET_ARTICLE_TEXT")) {
     const text = getArticleText();
     sendResponse({ text });
   }
 });  
+
+// This whole file can be considered as a scraping script.
