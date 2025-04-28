@@ -7,9 +7,9 @@ document.getElementById("summarize").addEventListener("click", () => {
   const summaryType = document.getElementById("summary-type").value;
   const result = document.getElementById("result");
 
-  result.innerHTML = "<div class='loader'></div>";
+  result.innerHTML = '<div class="loading"><div class="loader"></div></div>';
 
-  // 1️⃣ Get the user's API Key
+  // 1️⃣ Get the user's API Key from the storage
   chrome.storage.sync.get(["geminiApiKey"], ({ geminiApiKey }) => {
     if (!geminiApiKey) {
       result.textContent = "No API Key set. Click on gear icon to add one.";
@@ -57,26 +57,31 @@ async function getGeminiSummary(rawText, type, apiKey) {
 
   const prompt = promptMap[type] || promptMap.brief;
 
-  const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
-    {
-      method: "POST",
-      headers: { "content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { temperature: 0.2 },
-      }),
+  try {
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+      {
+        method: "POST",
+        headers: { "content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { temperature: 0.2 },
+        }),
+      }
+    );
+
+    if (!res.ok) {
+      const { error } = await res.json();
+      throw new Error(error?.message || "Request failed!");
     }
-  );
 
-  if (!res.ok) {
-    const { error } = await res.json();
-    throw new Error(error?.message || "Request failed!");
+    // If the the Gemini gives response
+    const data = await res.json();
+    return data.candidates?.[0]?.content?.parts?.[0]?.text ?? "No summary";
+  } catch (error) {
+    console.error("Error calling Gemini API:", error);
+    throw new Error("Failed to generate summary. Please try again later.");
   }
-
-  // If the the Gemini gives response
-  const data = await res.json();
-  return data.candidates?.[0]?.content?.parts?.[0]?.text ?? "No summary";
 }
 
 // To Copy the text
