@@ -4,6 +4,12 @@
 
 ##
 
+### Architecture :
+
+<img src="./assets/Pic-10.png" />
+
+##
+
 ### 🚀 Features : 
 
 - ✨ **One-Click Summaries** : Instantly get a concise summary of any article.
@@ -17,6 +23,28 @@
 - 🔒 **Privacy Friendly** : No unnecessary data collection.
 
 ##
+
+### 📂 Project Structure
+
+```bash
+/sum-up/
+│
+├── assets/                # Folder for all the images used in README.md.
+├── manifest.json          # Chrome Extension manifest file.
+├── background.js          # This file checks for Gemini API Key.
+├── options.html           # If Gemini API Key is not found this page will be rendered.
+├── options.js             # Logic for options.html.
+
+# When the extension is loaded and the icon is clicked
+
+├── popup.html             # Main popup UI.
+├── content.js             # For scraping the article.
+├── popup.js               # Logic for fetching and displaying the summary.
+└── README.md              # Project Documentation.
+
+```
+
+###
 
 ### 🛠️ How to Install (Locally) :
 
